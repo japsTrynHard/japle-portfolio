@@ -38,7 +38,7 @@ Project descriptions and attribution follow the supplied brief. Interactive prev
 
 ## Resumes
 
-Both original PDFs are included at `public/resumes/japle-ats.pdf` and `public/resumes/japle-with-photo.pdf`, with SHA-256 hashes matching the supplied files. The viewer validates the response content type and PDF signature, and enables preview/download only for available files. PDF zoom depends on native browser support; mobile users can open the actual PDF in a new tab.
+Both original PDFs are included at `public/resumes/Japle_A_Ligaya_Resume_ATS.pdf` and `public/resumes/Japle_A_Ligaya_Resume_With_Photo.pdf`, with SHA-256 hashes matching the supplied files. The viewer validates the response content type and PDF signature, and enables preview/download only for available files. PDF zoom depends on native browser support; mobile users can open the actual PDF in a new tab.
 
 ## Presentation and motion
 

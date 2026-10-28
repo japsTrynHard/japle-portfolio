@@ -75,11 +75,11 @@ test('project filters, technology selection, expertise keyboard navigation, and 
   await page.getByRole('button', { name: /With Photo/ }).click()
   await expect(page.getByRole('link', { name: 'Download PDF' })).toHaveAttribute(
     'href',
-    '/resumes/japle-with-photo.pdf',
+    '/resumes/Japle_A_Ligaya_Resume_With_Photo.pdf',
   )
   await expect(page.locator('.resume-document object')).toHaveAttribute(
     'data',
-    /japle-with-photo.pdf/,
+    /Japle_A_Ligaya_Resume_With_Photo.pdf/,
   )
   await page.getByRole('button', { name: 'Zoom in resume' }).click()
   await expect(page.locator('.resume-document object')).toHaveAttribute('data', /zoom=125/)
@@ -88,7 +88,7 @@ test('project filters, technology selection, expertise keyboard navigation, and 
   await page.getByRole('button', { name: /ATS-Friendly/ }).click()
   await expect(page.getByRole('link', { name: 'Download PDF' })).toHaveAttribute(
     'href',
-    '/resumes/japle-ats.pdf',
+    '/resumes/Japle_A_Ligaya_Resume_ATS.pdf',
   )
   await expect(page.getByRole('link', { name: 'Download PDF' })).toHaveAttribute(
     'download',

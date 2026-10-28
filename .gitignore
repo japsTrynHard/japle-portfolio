@@ -34,3 +34,4 @@ dist-ssr
 # Provider-installed local agent skills
 .agents/
 !.env.example
+skills-lock.json
