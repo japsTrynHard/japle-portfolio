@@ -30,3 +30,7 @@ dist-ssr
 
 .vercel
 .env*
+
+# Provider-installed local agent skills
+.agents/
+!.env.example
