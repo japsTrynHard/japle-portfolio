@@ -101,7 +101,7 @@ export function HeroSection() {
           >
             <div className="hero-role hero-profession">
               <Code2 size={20} />
-              <span>Full-Stack & Mobile Application Developer</span>
+              <span>Full-Stack Web & Mobile Developer</span>
             </div>
             <p className="hero-description">
               <span className="hero-tagline">Flutter mobile apps. React web applications.</span>
