@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18191a" />
+    <meta
+      name="description"
+      content="Japle Ligaya: full-stack and mobile developer seeking a software development internship. Explore Flutter and React projects, technical skills, and individual contributions."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Japle Ligaya — Full-Stack & Mobile Developer" />
+    <meta
+      property="og:description"
+      content="Explore the web and mobile applications, technical skills, and project contributions of Japle A. Ligaya."
+    />
+    <meta property="og:image" content="/images/social-preview.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin />
+    <title>Japle Ligaya — Full-Stack & Mobile Developer</title>
+    <script>
+      try {
+        var t =
+          localStorage.getItem('japle-theme-revision') === 'dark-default-v3'
+            ? localStorage.getItem('japle-theme')
+            : 'dark'
+        document.documentElement.dataset.theme =
+          t === 'light'
+            ? 'light'
+            : t === 'system'
+              ? matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+              : 'dark'
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark'
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

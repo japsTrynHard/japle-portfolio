@@ -1,0 +1,51 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/jetbrains-mono.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+:root {
+  --bg: #18191a;
+  --surface: #242526;
+  --elevated: #3a3b3c;
+  --text: #e4e6eb;
+  --muted: #b0b3b8;
+  --accent: #2d5ca6;
+  --highlight: #8ab4f8;
+  --line: #ffffff18;
+  --soft: #ffffff07;
+  --accent-soft: #2d5ca620;
+  --art-paper: #242526;
+  --art-ink: #d5dae3;
+  --nav-bg: #18191aeb;
+  --shadow: 0 1.25rem 3.75rem #0002;
+  --heading: 'Inter', system-ui, sans-serif;
+  --body: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  --bg: #f8fafc;
+  --surface: #fff;
+  --elevated: #e8eff9;
+  --text: #0f172a;
+  --muted: #475569;
+  --accent: #254f92;
+  --highlight: #2563eb;
+  --line: #0f172a20;
+  --soft: #0f172a04;
+  --accent-soft: #254f9210;
+  --art-paper: #fff;
+  --art-ink: #254f92;
+  --nav-bg: #f8fafceb;
+  --shadow: 0 1.25rem 3.75rem #254f9210;
+  color-scheme: light;
+}

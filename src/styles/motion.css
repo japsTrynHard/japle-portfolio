@@ -1,0 +1,7 @@
+.developer-art:not([data-motion-active='true']) *,
+.project-cover:not([data-motion-active='true']) *,
+.architecture-mini:not([data-motion-active='true']) *,
+.system-diagram:not([data-motion-active='true']) *,
+.paper-plane:not([data-motion-active='true']) * {
+  animation-play-state: paused !important;
+}
