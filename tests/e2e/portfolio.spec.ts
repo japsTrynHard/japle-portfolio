@@ -329,3 +329,34 @@ test('native touch swipe and drag-and-drop geography controls', async ({ browser
     await context.close()
   }
 })
+
+test('visitor counter shares requests across tabs and reloads and recovers after offline', async ({
+  page,
+  context,
+}) => {
+  let requests = 0
+  await context.route('**/api/visitors', async (route) => {
+    requests += 1
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ online: 1, total: 41 }),
+    })
+  })
+  await page.goto('/')
+  await expect(page.locator('.visitor-stats')).toContainText('41 total visits')
+  const other = await context.newPage()
+  await other.goto('/')
+  await expect(other.locator('.visitor-stats')).toContainText('41 total visits')
+  await page.reload()
+  await expect(page.locator('.visitor-stats')).toContainText('41 total visits')
+  expect(requests).toBe(1)
+  await expect(page.locator('.about-section')).toBeAttached()
+  await expect(other.locator('.about-section')).toBeAttached()
+  await context.setOffline(true)
+  await expect(page.locator('.visitor-stats')).toContainText('temporarily unavailable')
+  await context.setOffline(false)
+  await expect(page.locator('.visitor-stats')).toContainText('41 total visits')
+  expect(requests).toBe(1)
+  await other.close()
+})

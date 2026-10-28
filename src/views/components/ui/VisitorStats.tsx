@@ -1,49 +1,77 @@
 import { useEffect, useState } from 'react'
 import { Eye } from 'lucide-react'
-
-interface Counts {
-  online: number
-  total: number
-}
+import {
+  cachedVisitorStats,
+  refreshVisitorStats,
+  visitorCacheKey,
+} from '../../../services/visitorService'
+import type { VisitorCounts } from '../../../services/visitorService'
 
 export function VisitorStats() {
-  const [counts, setCounts] = useState<Counts | null>(null)
+  const [counts, setCounts] = useState<VisitorCounts | null>(null)
   const [unavailable, setUnavailable] = useState(false)
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
+    let failures = 0
     let stopped = false
     let active = false
     const controller = new AbortController()
     const refresh = async () => {
       if (stopped || active || document.hidden) return
+      if (!navigator.onLine) {
+        setUnavailable(true)
+        return
+      }
       active = true
       let success = false
       try {
-        const response = await fetch('/api/visitors', { method: 'POST', signal: controller.signal })
-        if (!response.ok || response.status === 204) throw new Error('Unavailable')
-        const data: Counts = await response.json()
-        if (![data.online, data.total].every((n) => Number.isSafeInteger(n) && n >= 0))
-          throw new Error('Invalid counts')
+        const data = await refreshVisitorStats(controller.signal)
         if (!stopped) {
           setCounts(data)
           setUnavailable(false)
         }
+        failures = 0
         success = true
       } catch {
-        if (!stopped) setUnavailable(true)
+        if (!stopped) {
+          failures += 1
+          setUnavailable(true)
+        }
       } finally {
         active = false
-        if (!stopped) timer = setTimeout(refresh, success ? 30000 : 60000)
+        if (!stopped)
+          timer = setTimeout(
+            refresh,
+            success ? 30000 : Math.min(300000, 30000 * 2 ** Math.min(failures, 4)),
+          )
       }
     }
     const onVisibility = () => {
       clearTimeout(timer)
-      if (!document.hidden) void refresh()
+      if (!document.hidden && navigator.onLine) void refresh()
     }
-    void refresh()
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== visitorCacheKey) return
+      const snapshot = cachedVisitorStats()
+      if (snapshot && navigator.onLine) {
+        setCounts(snapshot.counts)
+        setUnavailable(false)
+      }
+    }
+    const onOffline = () => {
+      clearTimeout(timer)
+      setUnavailable(true)
+    }
+    timer = setTimeout(refresh, 0)
+    window.addEventListener('storage', onStorage)
+    window.addEventListener('online', onVisibility)
+    window.addEventListener('offline', onOffline)
     document.addEventListener('visibilitychange', onVisibility)
     return () => {
       stopped = true
+      window.removeEventListener('storage', onStorage)
+      window.removeEventListener('online', onVisibility)
+      window.removeEventListener('offline', onOffline)
       controller.abort()
       clearTimeout(timer)
       document.removeEventListener('visibilitychange', onVisibility)
@@ -53,7 +81,7 @@ export function VisitorStats() {
     <div
       className="visitor-stats"
       aria-label="Portfolio visitor statistics"
-      title="Updates every 30 seconds. Online means active in the last 75 seconds; visits are counted once per browsing session."
+      title="Updates every 30 seconds. Online means a visible browser in the last 75 seconds. Tabs and reloads share one visit; a new visit starts after 30 minutes away."
     >
       {unavailable ? (
         <span className="visitor-unavailable">Visitor stats temporarily unavailable</span>
