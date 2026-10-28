@@ -13,8 +13,8 @@ import { ResumeSection } from '../sections/ResumeSection'
 import { ContactSection } from '../sections/ContactSection'
 export default function HomePage() {
   useMetadata(
-    'Japle Ligaya — Full-Stack & Mobile Developer',
-    'Japle Ligaya: full-stack and mobile developer seeking a software development internship. Review my React and Flutter projects, technical skills, and contributions.',
+    'Japle Ligaya — Full-Stack Web & Mobile Developer',
+    'Japle Ligaya: full-stack web and mobile developer seeking a software development internship. Review my React and Flutter projects, technical skills, and contributions.',
   )
   useEffect(() => {
     const hash = window.location.hash
