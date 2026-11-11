@@ -2,74 +2,192 @@
 import type { CSSProperties } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react'
 import { useLocation } from 'react-router-dom'
-import { SiFlutter, SiJavascript, SiPython, SiReact, SiTypescript } from 'react-icons/si'
+import {
+  SiDart,
+  SiFlutter,
+  SiGit,
+  SiHtml5,
+  SiJavascript,
+  SiNodedotjs,
+  SiPython,
+  SiReact,
+  SiSupabase,
+  SiTypescript,
+  SiVite,
+} from 'react-icons/si'
 import { FaJava } from 'react-icons/fa'
 import { Braces, Database } from 'lucide-react'
 import { useReducedMotion } from '../../../hooks/useReducedMotion'
 import '../../../styles/code-atmosphere.css'
 
 const particles = [
-  { id: 'react', Icon: SiReact, x: 1.8, y: 18, size: 38, duration: 23, direction: 1, tone: 'blue' },
+  {
+    id: 'react',
+    Icon: SiReact,
+    x: 0.6,
+    y: 18,
+    size: 48,
+    duration: 14,
+    direction: 1,
+    tone: 'blue',
+    edge: 'left',
+    delay: -1,
+  },
   {
     id: 'flutter',
     Icon: SiFlutter,
-    x: 94,
-    y: 31,
-    size: 32,
-    duration: 27,
-    direction: -1,
+    x: 96,
+    y: 26,
+    size: 46,
+    duration: 18,
+    direction: 1,
     tone: 'blue',
+    edge: 'right',
+    delay: -4,
   },
   {
     id: 'typescript',
     Icon: SiTypescript,
-    x: 1.5,
-    y: 72,
-    size: 29,
-    duration: 25,
+    x: 0.5,
+    y: 66,
+    size: 44,
+    duration: 16,
     direction: -1,
     tone: 'red',
+    edge: 'left',
+    delay: -3,
   },
   {
     id: 'python',
     Icon: SiPython,
-    x: 94,
-    y: 84,
-    size: 38,
-    duration: 29,
+    x: 96,
+    y: 80,
+    size: 50,
+    duration: 22,
     direction: 1,
     tone: 'blue',
+    edge: 'right',
+    delay: -2,
   },
-  { id: 'java', Icon: FaJava, x: 96, y: 56, size: 36, duration: 22, direction: 1, tone: 'red' },
+  {
+    id: 'java',
+    Icon: FaJava,
+    x: 96,
+    y: 53,
+    size: 48,
+    duration: 20,
+    direction: 1,
+    tone: 'red',
+    edge: 'right',
+    delay: -6,
+  },
   {
     id: 'javascript',
     Icon: SiJavascript,
-    x: 21,
+    x: 20,
     y: 95,
-    size: 23,
-    duration: 26,
+    size: 42,
+    duration: 23,
     direction: -1,
     tone: 'neutral',
+    edge: 'gap',
+    delay: -8,
   },
   {
     id: 'braces',
     Icon: Braces,
-    x: 49,
+    x: 47,
     y: 11,
-    size: 26,
+    size: 44,
     duration: 24,
     direction: 1,
     tone: 'neutral',
+    edge: 'gap',
+    delay: -7,
   },
   {
     id: 'database',
     Icon: Database,
-    x: 55,
-    y: 91,
-    size: 26,
-    duration: 28,
+    x: 56,
+    y: 92,
+    size: 44,
+    duration: 25,
     direction: -1,
     tone: 'blue',
+    edge: 'gap',
+    delay: -4,
+  },
+  {
+    id: 'html',
+    Icon: SiHtml5,
+    x: 0.6,
+    y: 25,
+    size: 46,
+    duration: 14,
+    direction: -1,
+    tone: 'red',
+    edge: 'left',
+    delay: -1,
+  },
+  {
+    id: 'node',
+    Icon: SiNodedotjs,
+    x: 0.5,
+    y: 59,
+    size: 48,
+    duration: 16,
+    direction: 1,
+    tone: 'blue',
+    edge: 'left',
+    delay: -3,
+  },
+  {
+    id: 'dart',
+    Icon: SiDart,
+    x: 96,
+    y: 33,
+    size: 46,
+    duration: 18,
+    direction: -1,
+    tone: 'neutral',
+    edge: 'right',
+    delay: -4,
+  },
+  {
+    id: 'git',
+    Icon: SiGit,
+    x: 96,
+    y: 60,
+    size: 44,
+    duration: 20,
+    direction: -1,
+    tone: 'blue',
+    edge: 'right',
+    delay: -6,
+  },
+  {
+    id: 'supabase',
+    Icon: SiSupabase,
+    x: 96,
+    y: 87,
+    size: 46,
+    duration: 22,
+    direction: -1,
+    tone: 'red',
+    edge: 'right',
+    delay: -2,
+  },
+  {
+    id: 'vite',
+    Icon: SiVite,
+    x: 78,
+    y: 95,
+    size: 42,
+    duration: 21,
+    direction: 1,
+    tone: 'blue',
+    edge: 'gap',
+    delay: -5,
   },
 ] as const
 
@@ -93,7 +211,7 @@ function CodeParticle({
   const springY = useSpring(y, { stiffness: 100, damping: 22 })
   const springProximity = useSpring(proximity, { stiffness: 85, damping: 22 })
   const springRotate = useSpring(rotate, { stiffness: 90, damping: 23 })
-  const opacity = useTransform(springProximity, [0, 1], [0.2, 0.48])
+  const opacity = useTransform(springProximity, [0, 1], [0.3, 0.58])
   const scale = useTransform(springProximity, [0, 1], [1, 1.16])
   useEffect(
     () =>
@@ -114,13 +232,14 @@ function CodeParticle({
       className="code-particle"
       data-code-icon={particle.id}
       data-tone={particle.tone}
+      data-edge={particle.edge}
       style={
         {
           left: `${particle.x}%`,
           top: `${particle.y}%`,
           '--code-size': `${particle.size}px`,
           '--code-duration': `${particle.duration}s`,
-          '--code-delay': `${-particle.duration * 0.37}s`,
+          '--code-delay': `${particle.delay}s`,
           '--code-direction': particle.direction,
         } as CSSProperties
       }
@@ -143,6 +262,8 @@ export function AmbientBackdrop() {
   const [scene, setScene] = useState(pathname.startsWith('/work/') ? 'case' : 'home')
   const [paused, setPaused] = useState(() => document.hidden)
   const [pointerEnabled, setPointerEnabled] = useState(false)
+  const [collisions, setCollisions] = useState(0)
+  const atmosphere = useRef<HTMLDivElement>(null)
   const reactions = useRef(new Map<string, Reaction>())
   const fieldX = useMotionValue(0),
     fieldY = useMotionValue(0)
@@ -219,6 +340,89 @@ export function AmbientBackdrop() {
   }, [reduced, fieldX, fieldY, lightX, lightY, lightOpacity])
 
   useEffect(() => {
+    if (reduced || paused) return
+    const root = atmosphere.current
+    if (!root) return
+    let frame = 0,
+      lastCheck = 0,
+      lastBurst = -Infinity
+    const touching = new Set<string>(),
+      cooldown = new Map<string, number>()
+    const impactTimers = new Map<HTMLElement, ReturnType<typeof setTimeout>>()
+    const impact = (element: HTMLElement) => {
+      const pending = impactTimers.get(element)
+      if (pending) clearTimeout(pending)
+      element.dataset.collision = 'true'
+      impactTimers.set(
+        element,
+        setTimeout(() => {
+          delete element.dataset.collision
+          impactTimers.delete(element)
+        }, 460),
+      )
+    }
+    const check = (now: number) => {
+      if (document.hidden) return
+      frame = requestAnimationFrame(check)
+      if (now - lastCheck < 80) return
+      lastCheck = now
+      const icons = Array.from(root.querySelectorAll<HTMLElement>('.code-particle'))
+        .map((element) => ({
+          element,
+          rect: element.querySelector('svg')!.getBoundingClientRect(),
+        }))
+        .filter(
+          ({ rect }) =>
+            rect.width > 0 &&
+            rect.height > 0 &&
+            rect.right > 0 &&
+            rect.left < innerWidth &&
+            rect.bottom > 0 &&
+            rect.top < innerHeight,
+        )
+      const contacts = new Set<string>()
+      for (let a = 0; a < icons.length; a++)
+        for (let b = a + 1; b < icons.length; b++) {
+          const first = icons[a],
+            second = icons[b]
+          const left = Math.max(first.rect.left, second.rect.left),
+            right = Math.min(first.rect.right, second.rect.right)
+          const top = Math.max(first.rect.top, second.rect.top),
+            bottom = Math.min(first.rect.bottom, second.rect.bottom)
+          if (right - left < 3 || bottom - top < 3) continue
+          const key = first.element.dataset.codeIcon + ':' + second.element.dataset.codeIcon
+          contacts.add(key)
+          if (
+            touching.has(key) ||
+            now - (cooldown.get(key) ?? -Infinity) < 3500 ||
+            now - lastBurst < 600
+          )
+            continue
+          cooldown.set(key, now)
+          lastBurst = now
+          impact(first.element)
+          impact(second.element)
+          setCollisions((count) => count + 1)
+          window.dispatchEvent(
+            new CustomEvent('portfolio:pixel-burst', {
+              detail: { x: (left + right) / 2, y: (top + bottom) / 2, kind: 'collision' },
+            }),
+          )
+        }
+      touching.clear()
+      contacts.forEach((key) => touching.add(key))
+    }
+    frame = requestAnimationFrame(check)
+    return () => {
+      cancelAnimationFrame(frame)
+      impactTimers.forEach((timer, element) => {
+        clearTimeout(timer)
+        delete element.dataset.collision
+      })
+    }
+  }, [reduced, paused])
+
+  useEffect(() => {
     if (pathname.startsWith('/work/')) {
       setScene('case')
       return
@@ -274,6 +478,8 @@ export function AmbientBackdrop() {
   return (
     <div
       className="code-atmosphere"
+      ref={atmosphere}
+      data-collisions={collisions}
       aria-hidden="true"
       data-scene={scene}
       data-paused={paused}

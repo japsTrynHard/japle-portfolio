@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { ArrowUpRight, FileText, Menu, X } from 'lucide-react'
+import { ArrowUpRight, FileText, Menu, Monitor, X } from 'lucide-react'
 import { motion, useScroll, useSpring } from 'motion/react'
 import { ThemeGlyph } from '../ui/ThemeGlyph'
 import { useThemeController } from '../../../controllers/useThemeController'
@@ -15,7 +15,7 @@ const links = [
   ['Contact', 'contact'],
 ]
 export function Header() {
-  const { isDark, toggleTheme } = useThemeController()
+  const { isDark, toggleTheme, theme, setTheme } = useThemeController()
   const reducedMotion = useReducedMotion()
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState('home')
@@ -91,23 +91,35 @@ export function Header() {
           ))}
         </nav>
         <div className="nav-actions">
-          <button
-            className="theme-switch"
-            role="switch"
-            aria-label="Dark mode"
-            aria-checked={isDark}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            onClick={toggleTheme}
-          >
-            <span className="theme-switch-track" aria-hidden="true">
-              <span className="theme-switch-thumb">
-                <ThemeGlyph dark={isDark} />
+          <div className="theme-controls" role="group" aria-label="Appearance">
+            <button
+              className="theme-auto"
+              aria-label="Follow device theme"
+              aria-pressed={theme === 'system'}
+              title={theme === 'system' ? 'Following device theme' : 'Use device theme'}
+              onClick={() => setTheme('system')}
+            >
+              <Monitor size={13} aria-hidden="true" />
+              <span>Auto</span>
+            </button>
+            <button
+              className="theme-switch"
+              role="switch"
+              aria-label="Dark mode"
+              aria-checked={isDark}
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              onClick={toggleTheme}
+            >
+              <span className="theme-switch-track" aria-hidden="true">
+                <span className="theme-switch-thumb">
+                  <ThemeGlyph dark={isDark} />
+                </span>
               </span>
-            </span>
-            <span className="theme-switch-label" aria-hidden="true">
-              {isDark ? 'Dark' : 'Light'}
-            </span>
-          </button>
+              <span className="theme-switch-label" aria-hidden="true">
+                {isDark ? 'Dark' : 'Light'}
+              </span>
+            </button>
+          </div>
           <Link
             to="/#resume"
             className="nav-resume"

@@ -1,22 +1,27 @@
 import { useReducedMotion } from '../../../hooks/useReducedMotion'
 import { useEffect, useState } from 'react'
-import { motion, useMotionValue, useSpring } from 'motion/react'
+import { motion, useMotionValue } from 'motion/react'
 type CursorMode = 'idle' | 'link' | 'view' | 'drag' | 'text'
 export function InteractiveCursor() {
   const reduced = useReducedMotion()
   const [mode, setMode] = useState<CursorMode>('idle')
+  const [fine, setFine] = useState(() => matchMedia('(hover: hover) and (pointer: fine)').matches)
   const x = useMotionValue(-100),
     y = useMotionValue(-100),
     opacity = useMotionValue(0)
-  const softX = useSpring(x, { stiffness: 420, damping: 36 }),
-    softY = useSpring(y, { stiffness: 420, damping: 36 })
   useEffect(() => {
-    if (reduced || !matchMedia('(hover: hover) and (pointer: fine)').matches) return
+    const media = matchMedia('(hover: hover) and (pointer: fine)')
+    const update = () => setFine(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+  useEffect(() => {
+    if (reduced || !fine) return
     let visible = false
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return
-      x.set(event.clientX)
-      y.set(event.clientY)
+      x.set(Math.round(event.clientX / 3) * 3)
+      y.set(Math.round(event.clientY / 3) * 3)
       if (!visible) {
         opacity.set(1)
         visible = true
@@ -51,17 +56,24 @@ export function InteractiveCursor() {
       window.removeEventListener('pointerout', leave)
       window.removeEventListener('blur', hide)
       window.removeEventListener('keydown', keyboard)
+      opacity.set(0)
     }
-  }, [reduced, x, y, opacity])
-  if (reduced) return null
+  }, [reduced, fine, x, y, opacity])
+  if (reduced || !fine) return null
   return (
     <motion.div
       className={`interactive-cursor cursor-${mode}`}
-      style={{ x: softX, y: softY, opacity }}
+      style={{ x, y, opacity }}
       aria-hidden="true"
     >
       <div className="cursor-ring">
-        <span>{mode === 'view' ? 'View ↗' : mode === 'drag' ? '↔' : ''}</span>
+        <i className="pixel-corner pixel-corner--tl" />
+        <i className="pixel-corner pixel-corner--tr" />
+        <i className="pixel-corner pixel-corner--bl" />
+        <i className="pixel-corner pixel-corner--br" />
+        <span className="cursor-label">
+          {mode === 'view' ? 'View ↗' : mode === 'drag' ? '↔' : ''}
+        </span>
       </div>
     </motion.div>
   )

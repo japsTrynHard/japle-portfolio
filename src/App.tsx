@@ -5,6 +5,7 @@ import { useSceneMotion } from './hooks/useSceneMotion'
 import { useSurfaceInteraction } from './hooks/useSurfaceInteraction'
 import { AmbientBackdrop } from './views/components/animations/AmbientBackdrop'
 import { InteractiveCursor } from './views/components/animations/InteractiveCursor'
+import { PixelEffects } from './views/components/animations/PixelEffects'
 import { Header } from './views/components/layouts/Header'
 import { Footer } from './views/components/layouts/Footer'
 import { Wordmark } from './views/components/ui/Wordmark'
@@ -71,6 +72,7 @@ export default function App() {
       <BrowserRouter>
         <AmbientBackdrop />
         <InteractiveCursor />
+        <PixelEffects />
         <NavigationEffects />
         <a href="#main-content" className="skip-link">
           Skip to content

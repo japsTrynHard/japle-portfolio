@@ -14,8 +14,13 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
 }) => {
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
+  await page.emulateMedia({ colorScheme: 'light' })
   await page.goto('/')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('button', { name: 'Follow device theme' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
   await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
@@ -40,8 +45,11 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
   await page.screenshot({ path: 'artifacts/home-light.png' })
-  await page.evaluate(() => localStorage.setItem('japle-theme', 'system'))
-  await page.reload()
+  await page.getByRole('button', { name: 'Follow device theme' }).click()
+  await expect(page.getByRole('button', { name: 'Follow device theme' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
   await page.emulateMedia({ colorScheme: 'dark' })
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   await expect(page.getByRole('switch', { name: 'Dark mode' })).toBeChecked()
@@ -50,60 +58,79 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   expect(errors).toEqual([])
 })
-test('first paint stays light for new visitors, legacy preferences, and blocked storage', async ({
+test('device theme controls first paint, live changes, overrides, and storage fallback', async ({
   browser,
 }) => {
-  for (const scenario of ['fresh', 'legacy', 'blocked'] as const) {
-    const context = await browser.newContext({
-      baseURL: 'http://127.0.0.1:5173',
-      colorScheme: 'dark',
-    })
-    try {
-      await context.addInitScript((mode) => {
-        if (window.top !== window) return
-        if (mode === 'legacy' && !localStorage.getItem('japle-theme-revision')) {
-          localStorage.setItem('japle-theme', 'dark')
-          localStorage.setItem('japle-theme-revision', 'dark-default-v3')
-        }
-        if (mode === 'blocked') {
-          Object.defineProperties(Storage.prototype, {
-            getItem: {
-              configurable: true,
-              value: () => {
-                throw new DOMException('Storage is unavailable', 'SecurityError')
-              },
-            },
-            setItem: {
-              configurable: true,
-              value: () => {
-                throw new DOMException('Storage is unavailable', 'SecurityError')
-              },
-            },
-          })
-        }
-      }, scenario)
-      // Check the document's initial appearance before React can correct it.
-      await context.route('**/src/main.tsx', (route) =>
-        route.fulfill({ contentType: 'application/javascript', body: '' }),
-      )
-      const page = await context.newPage()
-      await page.goto('/')
-      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
-      await context.unroute('**/src/main.tsx')
-      await page.reload()
-      await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
-      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
-      await page.getByRole('switch', { name: 'Dark mode' }).click()
-      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-      await page.reload()
-      await expect(page.locator('html')).toHaveAttribute(
-        'data-theme',
-        scenario === 'blocked' ? 'light' : 'dark',
-      )
-    } finally {
-      await context.close()
+  for (const scheme of ['light', 'dark'] as const)
+    for (const scenario of ['fresh', 'legacy', 'blocked'] as const) {
+      const context = await browser.newContext({
+        baseURL: 'http://127.0.0.1:5173',
+        colorScheme: scheme,
+      })
+      try {
+        await context.addInitScript(
+          ({ mode, initialScheme }) => {
+            if (window.top !== window) return
+            if (mode === 'legacy' && !localStorage.getItem('japle-theme-revision')) {
+              localStorage.setItem('japle-theme', initialScheme === 'dark' ? 'light' : 'dark')
+              localStorage.setItem('japle-theme-revision', 'nba-light-v1')
+            }
+            if (mode === 'blocked') {
+              Object.defineProperties(Storage.prototype, {
+                getItem: {
+                  configurable: true,
+                  value: () => {
+                    throw new DOMException('Storage is unavailable', 'SecurityError')
+                  },
+                },
+                setItem: {
+                  configurable: true,
+                  value: () => {
+                    throw new DOMException('Storage is unavailable', 'SecurityError')
+                  },
+                },
+              })
+            }
+          },
+          { mode: scenario, initialScheme: scheme },
+        )
+        // Check the document's initial appearance before React can correct it.
+        await context.route('**/src/main.tsx', (route) =>
+          route.fulfill({ contentType: 'application/javascript', body: '' }),
+        )
+        const page = await context.newPage()
+        await page.goto('/')
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+        await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute(
+          'content',
+          scheme === 'dark' ? '#18191a' : '#f8fafc',
+        )
+        await context.unroute('**/src/main.tsx')
+        await page.reload()
+        await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+        const auto = page.getByRole('button', { name: 'Follow device theme' })
+        await expect(auto).toHaveAttribute('aria-pressed', 'true')
+        const otherScheme = scheme === 'dark' ? 'light' : 'dark'
+        await page.emulateMedia({ colorScheme: otherScheme })
+        await expect(page.locator('html')).toHaveAttribute('data-theme', otherScheme)
+        await page.getByRole('switch', { name: 'Dark mode' }).click()
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+        await expect(auto).toHaveAttribute('aria-pressed', 'false')
+        await page.reload()
+        await expect(page.locator('html')).toHaveAttribute(
+          'data-theme',
+          scenario === 'blocked' ? otherScheme : scheme,
+        )
+        await auto.click()
+        await expect(auto).toHaveAttribute('aria-pressed', 'true')
+        await expect(page.locator('html')).toHaveAttribute('data-theme', otherScheme)
+        await page.emulateMedia({ colorScheme: scheme })
+        await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
+      } finally {
+        await context.close()
+      }
     }
-  }
 })
 test('project filters, technology selection, expertise keyboard navigation, and real CVs', async ({
   page,
@@ -236,7 +263,7 @@ test('full-name identity, neutral dark canvas, and contextual cursor', async ({ 
   })
   expect(nameSpacing.gap).toBeGreaterThanOrEqual(0)
   expect(nameSpacing.gap).toBeLessThanOrEqual(nameSpacing.fontSize * 0.3)
-  await expect(page.locator('.code-particle')).toHaveCount(8)
+  await expect(page.locator('.code-particle')).toHaveCount(14)
   await page.locator('.project-card').first().hover()
   await expect(page.locator('.interactive-cursor')).toHaveClass(/cursor-view/)
   await expect(page.locator('.interactive-cursor')).toHaveCSS('pointer-events', 'none')
@@ -250,7 +277,7 @@ test('full-name identity, neutral dark canvas, and contextual cursor', async ({ 
   ).toBe(true)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(page.locator('.interactive-cursor')).toHaveCount(0)
-  await expect(page.locator('.code-particle')).toHaveCount(8)
+  await expect(page.locator('.code-particle')).toHaveCount(14)
 })
 test('decorative code background responds without blocking controls and respects reduced motion', async ({
   page,
@@ -262,7 +289,7 @@ test('decorative code background responds without blocking controls and respects
   await expect(atmosphere).toHaveCSS('pointer-events', 'none')
   await expect(atmosphere).toHaveAttribute('data-scene', 'home')
   await expect(atmosphere).toHaveAttribute('data-pointer', 'true')
-  await expect(atmosphere.locator('.code-particle')).toHaveCount(8)
+  await expect(atmosphere.locator('.code-particle')).toHaveCount(14)
   await expect(atmosphere.locator('.code-particle__drift').first()).not.toHaveCSS(
     'animation-name',
     'none',
@@ -297,6 +324,131 @@ test('decorative code background responds without blocking controls and respects
     'none',
   )
   await expect(light).toBeHidden()
+})
+test('pixel feedback follows pointer and native clicks, expires, and stops for reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/')
+  // Isolate feedback expiry from independently timed background collision bursts.
+  await page.addStyleTag({ content: '.code-particle { display: none !important; }' })
+  const pixels = page.locator('canvas.pixel-effects')
+  const hasDrawnPixels = () =>
+    pixels.evaluate((element) => {
+      const canvas = element as HTMLCanvasElement
+      const data = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data
+      for (let index = 3; index < data.length; index += 4) if (data[index]) return true
+      return false
+    })
+  await expect(pixels).toHaveAttribute('aria-hidden', 'true')
+  await expect(pixels).toHaveCSS('pointer-events', 'none')
+  await page.mouse.move(200, 180)
+  await page.mouse.move(400, 220, { steps: 4 })
+  await expect(pixels).toHaveAttribute('data-active', 'true')
+  await expect.poll(hasDrawnPixels).toBe(true)
+
+  const stage = page.locator('.interface-stage')
+  await stage.getByRole('button', { name: 'Mobile', exact: true }).click()
+  await expect(stage).toHaveAttribute('data-interface-mode', 'mobile')
+  await expect(pixels).toHaveAttribute('data-last-effect', 'click')
+  const pointerBursts = Number(await pixels.getAttribute('data-bursts'))
+  await expect(pixels).toHaveAttribute('data-active', 'false')
+  const api = stage.getByRole('button', { name: 'APIs & data', exact: true })
+  await api.focus()
+  await page.keyboard.press('Enter')
+  await expect(stage).toHaveAttribute('data-interface-mode', 'api')
+  await expect(pixels).toHaveAttribute('data-last-effect', 'click')
+  await expect
+    .poll(async () => Number(await pixels.getAttribute('data-bursts')))
+    .toBeGreaterThan(pointerBursts)
+  await expect.poll(hasDrawnPixels).toBe(true)
+  await expect(pixels).toHaveAttribute('data-active', 'false')
+  await expect.poll(hasDrawnPixels).toBe(false)
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(pixels).toHaveAttribute('data-reduced-motion', 'true')
+  await expect(pixels).toBeHidden()
+  const reducedBursts = await pixels.getAttribute('data-bursts')
+  await stage.getByRole('button', { name: 'Web', exact: true }).click()
+  await expect(stage).toHaveAttribute('data-interface-mode', 'web')
+  await page.mouse.move(600, 300)
+  await expect(pixels).toHaveAttribute('data-active', 'false')
+  await expect(pixels).toHaveAttribute('data-bursts', reducedBursts!)
+  await expect.poll(hasDrawnPixels).toBe(false)
+})
+test('actual programming-icon contact creates one pixel burst while contact is sustained', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  const atmosphere = page.locator('.code-atmosphere')
+  // Fix two actual rendered SVGs apart, then bring their geometry into contact.
+  await page.addStyleTag({
+    content: `
+      .code-particle { display: none !important; }
+      .code-particle[data-code-icon="react"], .code-particle[data-code-icon="flutter"] {
+        display: block !important; position: fixed !important;
+        left: 200px !important; top: 250px !important;
+        width: 50px !important; height: 50px !important;
+      }
+      .code-particle[data-code-icon="flutter"] { left: 400px !important; }
+      .code-atmosphere__field, .code-atmosphere__scene, .code-particle,
+      .code-particle__reactor, .code-particle__drift, .code-particle__drift > svg {
+        transform: none !important; animation: none !important; transition: none !important;
+      }
+    `,
+  })
+  const first = page.locator('.code-particle[data-code-icon="react"] svg')
+  const second = page.locator('.code-particle[data-code-icon="flutter"] svg')
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await expect(atmosphere).toHaveAttribute('data-pointer', 'true')
+  const initialFirst = await first.boundingBox()
+  const initialSecond = await second.boundingBox()
+  expect(initialFirst!.x + initialFirst!.width).toBeLessThan(initialSecond!.x)
+  const initialCollisions = Number(await atmosphere.getAttribute('data-collisions'))
+  await page.evaluate(() => {
+    document.documentElement.dataset.testCollisionEvents = '0'
+    window.addEventListener('portfolio:pixel-burst', (event) => {
+      const detail = (event as CustomEvent<{ kind: string; x: number; y: number }>).detail
+      if (detail.kind !== 'collision') return
+      const root = document.documentElement
+      root.dataset.testCollisionEvents = String(Number(root.dataset.testCollisionEvents) + 1)
+      root.dataset.testCollisionPoint = JSON.stringify({ x: detail.x, y: detail.y })
+    })
+  })
+  await page
+    .locator('.code-particle[data-code-icon="flutter"]')
+    .evaluate((element) => (element as HTMLElement).style.setProperty('left', '220px', 'important'))
+  await expect(atmosphere).toHaveAttribute('data-collisions', String(initialCollisions + 1))
+  await expect(page.locator('html')).toHaveAttribute('data-test-collision-events', '1')
+  const contactPoint = await page.evaluate(
+    () =>
+      JSON.parse(document.documentElement.dataset.testCollisionPoint!) as { x: number; y: number },
+  )
+  const firstBounds = (await first.boundingBox())!
+  const secondBounds = (await second.boundingBox())!
+  expect(contactPoint.x).toBeGreaterThanOrEqual(Math.max(firstBounds.x, secondBounds.x))
+  expect(contactPoint.x).toBeLessThanOrEqual(
+    Math.min(firstBounds.x + firstBounds.width, secondBounds.x + secondBounds.width),
+  )
+  expect(contactPoint.y).toBeGreaterThanOrEqual(Math.max(firstBounds.y, secondBounds.y))
+  expect(contactPoint.y).toBeLessThanOrEqual(
+    Math.min(firstBounds.y + firstBounds.height, secondBounds.y + secondBounds.height),
+  )
+  const pixels = page.locator('canvas.pixel-effects')
+  await expect(pixels).toHaveAttribute('data-last-effect', 'collision')
+  await expect
+    .poll(() =>
+      pixels.evaluate((element) => {
+        const canvas = element as HTMLCanvasElement
+        const data = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data
+        for (let index = 3; index < data.length; index += 4) if (data[index]) return true
+        return false
+      }),
+    )
+    .toBe(true)
+  await expect(pixels).toHaveAttribute('data-active', 'false')
+  await expect(atmosphere).toHaveAttribute('data-collisions', String(initialCollisions + 1))
+  await expect(page.locator('html')).toHaveAttribute('data-test-collision-events', '1')
 })
 test('development-area explorer works with keyboard and reduced motion', async ({ page }) => {
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {
@@ -361,6 +513,7 @@ test('responsive layouts, mobile navigation, touch swipe, and reduced motion', a
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await expect(page.locator('.code-particle:visible')).toHaveCount(width <= 850 ? 8 : 14)
     const heading = await page.locator('.identity-heading').boundingBox()
     const workbench = await page.locator('.identity-workbench').boundingBox()
     expect(heading).not.toBeNull()

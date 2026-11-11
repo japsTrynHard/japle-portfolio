@@ -15,8 +15,14 @@ export function useSurfaceInteraction() {
       const surface = pointer.target.closest<HTMLElement>(surfaces)
       if (!surface) return
       const bounds = surface.getBoundingClientRect()
-      surface.style.setProperty('--surface-x', `${pointer.clientX - bounds.left}px`)
-      surface.style.setProperty('--surface-y', `${pointer.clientY - bounds.top}px`)
+      surface.style.setProperty(
+        '--surface-x',
+        `${Math.round((pointer.clientX - bounds.left) / 4) * 4}px`,
+      )
+      surface.style.setProperty(
+        '--surface-y',
+        `${Math.round((pointer.clientY - bounds.top) / 4) * 4}px`,
+      )
     }
     const move = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return

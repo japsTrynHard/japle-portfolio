@@ -1,0 +1,78 @@
+.pixel-effects {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 140;
+  pointer-events: none;
+  image-rendering: pixelated;
+  contain: strict;
+}
+.interactive-cursor .cursor-ring {
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  opacity: 0.8;
+  transition:
+    width 0.16s steps(4, end),
+    height 0.16s steps(4, end),
+    opacity 0.15s;
+}
+.interactive-cursor .pixel-corner {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-color: var(--highlight);
+  border-style: solid;
+  border-width: 0;
+}
+.interactive-cursor .pixel-corner--tl {
+  top: 0;
+  left: 0;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+.interactive-cursor .pixel-corner--tr {
+  top: 0;
+  right: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+.interactive-cursor .pixel-corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+.interactive-cursor .pixel-corner--br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}
+.interactive-cursor.cursor-link .cursor-ring {
+  background: transparent;
+}
+.interactive-cursor.cursor-link .pixel-corner {
+  width: 8px;
+  height: 8px;
+  border-color: var(--signal-text);
+}
+.interactive-cursor.cursor-view .cursor-ring,
+.interactive-cursor.cursor-drag .cursor-ring {
+  background: var(--surface);
+  border-radius: 0;
+}
+.interactive-cursor .cursor-label {
+  font: 600 0.55rem var(--mono);
+  color: var(--text);
+}
+.interactive-cursor.cursor-text .cursor-ring {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pixel-effects {
+    display: none;
+  }
+}
