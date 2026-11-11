@@ -13,11 +13,11 @@ export function useThemeController() {
   const prefersDark = useSyncExternalStore(subscribeSystemTheme, systemIsDark, () => false)
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      if (localStorage.getItem('japle-theme-revision') !== 'dark-default-v3') return 'dark'
+      if (localStorage.getItem('japle-theme-revision') !== 'nba-light-v1') return 'light'
       const value = localStorage.getItem('japle-theme')
-      return value === 'light' || value === 'system' ? value : 'dark'
+      return value === 'dark' || value === 'system' ? value : 'light'
     } catch {
-      return 'dark'
+      return 'light'
     }
   })
   const resolvedTheme = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme
@@ -34,7 +34,7 @@ export function useThemeController() {
     apply()
     try {
       localStorage.setItem('japle-theme', theme)
-      localStorage.setItem('japle-theme-revision', 'dark-default-v3')
+      localStorage.setItem('japle-theme-revision', 'nba-light-v1')
     } catch {
       /* Preference remains functional without storage. */
     }

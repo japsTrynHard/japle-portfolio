@@ -6,8 +6,10 @@ import { technologyCategories } from '../../data/technologies'
 import { getProject } from '../../services/projectService'
 import { SectionHeading } from '../components/ui/SectionHeading'
 import { TechnologyIcon } from '../components/technologies/TechnologyIcon'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
 export function TechnologiesSection() {
   const controller = useTechnologyController()
+  const reduced = useReducedMotion()
   return (
     <section id="technologies" className="section technologies-section">
       <div className="container">
@@ -49,11 +51,14 @@ export function TechnologiesSection() {
                 key={technology.name}
                 className={`technology-badge ${technology.name === controller.selected ? 'selected' : ''}`}
                 aria-pressed={technology.name === controller.selected}
-                initial={{ opacity: 0, scale: 0.85 }}
+                initial={reduced ? false : { opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, delay: Math.min(index * 0.015, 0.25) }}
+                exit={{ opacity: 0, scale: reduced ? 1 : 0.95 }}
+                transition={{
+                  duration: reduced ? 0 : 0.3,
+                  delay: reduced ? 0 : Math.min(index * 0.015, 0.15),
+                }}
                 onClick={() =>
                   controller.setSelected(
                     technology.name === controller.selected ? null : technology.name,

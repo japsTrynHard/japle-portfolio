@@ -2,12 +2,13 @@ import { ArrowUpRight, ArrowUp } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { VisitorStats } from '../ui/VisitorStats'
 import { ExternalLink } from '../ui/ExternalLink'
+import { Wordmark } from '../ui/Wordmark'
 export function Footer() {
   return (
     <footer className="site-footer container">
       <div className="footer-top">
-        <Link className="wordmark" to="/#home">
-          japle<span className="wordmark-dot">.dev</span>
+        <Link className="wordmark" to="/#home" aria-label="Japle Ligaya home">
+          <Wordmark />
         </Link>
         <p>Full-Stack Web & Mobile Developer</p>
         <Link to="/#home" className="text-link">

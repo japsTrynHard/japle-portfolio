@@ -42,7 +42,7 @@ Both original PDFs are included at `public/resumes/Japle_A_Ligaya_Resume_ATS.pdf
 
 ## Presentation and motion
 
-Dark is the default theme. The header Light/Dark switch persists the selected mode, and the Resume / CV button scrolls directly to the resume section. Desktop sizes use a 125% type/spacing scale with adaptive tablet and mobile sizes, while browser zoom remains independent. Ambient programming logos and the decorative cursor use transforms and passive pointer listeners. The normal cursor remains available. Decorative motion and autoplay stop for reduced-motion preferences, including preference changes while the site is open.
+Light is the default theme, with NBA-inspired red, blue, and white accents. Dark mode retains a neutral charcoal background. The identity uses the full Japle Ligaya name and an original JL monogram. The header Light/Dark switch persists the selected mode, and the Resume / CV button scrolls directly to the resume section. The new light default replaces the previous theme revision once; subsequent user selections persist. Desktop sizes use a 125% type/spacing scale with adaptive tablet and mobile sizes, while browser zoom remains independent. The hero includes an interactive Web/Mobile/APIs interface study, followed by actual project screenshots and contributions. Animated programming icons respond to pointer proximity and the active section; interactive surfaces add a local hover highlight. Contextual cursor feedback supplements the normal cursor; native keyboard and touch controls remain available. Decorative motion and autoplay stop for reduced-motion preferences, including preference changes while the site is open, and background drift pauses in hidden tabs.
 
 ## Vercel
 

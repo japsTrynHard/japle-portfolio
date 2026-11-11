@@ -2,10 +2,12 @@ import { lazy, Suspense, useEffect, useRef } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { motion, MotionConfig } from 'motion/react'
 import { useSceneMotion } from './hooks/useSceneMotion'
+import { useSurfaceInteraction } from './hooks/useSurfaceInteraction'
 import { AmbientBackdrop } from './views/components/animations/AmbientBackdrop'
 import { InteractiveCursor } from './views/components/animations/InteractiveCursor'
 import { Header } from './views/components/layouts/Header'
 import { Footer } from './views/components/layouts/Footer'
+import { Wordmark } from './views/components/ui/Wordmark'
 const HomePage = lazy(() => import('./views/pages/HomePage'))
 import NotFoundPage from './views/pages/NotFoundPage'
 const ProjectPage = lazy(() => import('./views/pages/ProjectPage'))
@@ -23,7 +25,7 @@ function PageRoutes() {
         fallback={
           <div className="page-loading" role="status">
             <span className="wordmark">
-              japle<span className="wordmark-dot">.dev</span>
+              <Wordmark />
             </span>
             <p>Loading portfolio…</p>
           </div>
@@ -40,6 +42,7 @@ function PageRoutes() {
 }
 function NavigationEffects() {
   useSceneMotion()
+  useSurfaceInteraction()
   const { pathname, hash } = useLocation()
   const previousPath = useRef(pathname)
   useEffect(() => {

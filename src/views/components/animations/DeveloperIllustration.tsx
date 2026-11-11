@@ -92,7 +92,7 @@ export function DeveloperIllustration() {
         </g>
       </svg>
       <span className="art-label label-bottom">INTERFACES / AUTH / DATA / AI</span>
-      <span className="art-coordinate">japle.dev</span>
+      <span className="art-coordinate">JL / WEB + MOBILE</span>
     </div>
   )
 }

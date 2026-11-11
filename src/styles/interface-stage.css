@@ -1,0 +1,659 @@
+.interface-stage {
+  --stage-blue: var(--highlight);
+  --stage-red: var(--signal-red, #c8102e);
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1.5rem 4rem #00000014;
+}
+.interface-stage::before {
+  content: '';
+  position: absolute;
+  height: 3px;
+  top: -1px;
+  left: 1.5rem;
+  right: 1.5rem;
+  background: linear-gradient(90deg, var(--stage-blue) 0 68%, var(--stage-red) 68% 100%);
+}
+.interface-stage__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.15rem 1.3rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.interface-stage__heading-icon {
+  color: var(--stage-blue);
+  display: flex;
+}
+.interface-stage__study {
+  margin-left: auto;
+  color: var(--muted);
+  font: 0.47rem var(--mono);
+  letter-spacing: 0.09em;
+}
+.interface-stage__controls {
+  display: flex;
+  margin: 0 1.15rem;
+  padding: 0.3rem;
+  gap: 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  background: var(--bg);
+}
+.interface-stage__control {
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.4rem;
+  border: 0;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--muted);
+  font-size: clamp(12px, 0.68rem, 14px);
+  font-weight: 600;
+  cursor: pointer;
+}
+.interface-stage__control > svg,
+.interface-stage__control > span:not(.interface-stage__selection) {
+  position: relative;
+  z-index: 1;
+}
+.interface-stage__control[aria-pressed='true'] {
+  color: var(--text);
+}
+.interface-stage__control:focus-visible {
+  outline: 2px solid var(--stage-blue);
+  outline-offset: 3px;
+}
+.interface-stage__selection {
+  position: absolute;
+  inset: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  box-shadow: 0 2px 6px #0000000d;
+}
+.interface-stage__canvas {
+  position: relative;
+  aspect-ratio: 560 / 410;
+  min-width: 0;
+  margin: 0.5rem 0.4rem 0;
+  font-size: clamp(6px, 2.1cqi, 12px);
+  line-height: 1.2;
+}
+.interface-stage__canvas-label {
+  position: absolute;
+  top: 5%;
+  left: 7%;
+  font: 0.55em var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.12em;
+}
+.interface-stage__connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 95%;
+  overflow: visible;
+}
+.interface-stage__connection-base {
+  stroke: var(--muted);
+  stroke-opacity: 0.22;
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+}
+.interface-stage__connection-signal {
+  stroke: var(--stage-blue);
+  stroke-width: 1.5;
+}
+[data-interface-mode='api'] .interface-stage__connection-signal {
+  stroke: var(--stage-red);
+}
+.interface-stage__junction {
+  fill: var(--stage-blue);
+}
+.interface-stage__panel {
+  position: absolute;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: 0 1rem 2rem #00000019;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+.interface-stage__browser {
+  top: 15%;
+  left: 6%;
+  width: 70%;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  z-index: 2;
+}
+[data-interface-mode='web'] .interface-stage__browser {
+  border-color: color-mix(in srgb, var(--stage-blue) 65%, transparent);
+  box-shadow:
+    0 1rem 2rem #00000020,
+    0 0 0 3px color-mix(in srgb, var(--stage-blue) 7%, transparent);
+}
+.interface-stage__browser-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.85em 1em;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font: 0.65em var(--mono);
+}
+.interface-stage__browser-bar > svg {
+  margin-left: auto;
+}
+.interface-stage__window-marks {
+  display: flex;
+  gap: 0.32em;
+}
+.interface-stage__window-marks i {
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.5;
+}
+.interface-stage__window-marks i:first-child {
+  background: var(--stage-red);
+  opacity: 1;
+}
+.interface-stage__app {
+  padding: 1.2em 1.5em;
+}
+.interface-stage__app-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  font: 0.6em var(--mono);
+  letter-spacing: 0.05em;
+}
+.interface-stage__app-mark {
+  font: 800 1.4em var(--heading);
+  letter-spacing: -0.08em;
+  color: var(--stage-blue);
+}
+.interface-stage__avatar {
+  display: grid;
+  place-items: center;
+  margin-left: auto;
+  width: 1.8em;
+  height: 1.8em;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+}
+.interface-stage__app-body {
+  padding: 1.4em 0 0.2em;
+}
+.interface-stage__eyebrow {
+  display: block;
+  font: 0.53em var(--mono);
+  letter-spacing: 0.09em;
+  color: var(--muted);
+}
+.interface-stage__app-copy strong {
+  display: block;
+  margin-top: 0.25em;
+  font-size: 1.8em;
+  line-height: 1.1;
+  letter-spacing: -0.06em;
+}
+.interface-stage__app-copy p {
+  margin: 0.6em 0 0;
+  font-size: 0.65em;
+  color: var(--muted);
+}
+.interface-stage__app-blocks {
+  display: flex;
+  gap: 0.55em;
+  margin-top: 1.4em;
+}
+.interface-stage__app-blocks span {
+  height: 2.8em;
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 0.3em;
+  background: color-mix(in srgb, var(--stage-blue) 8%, var(--surface));
+}
+.interface-stage__app-blocks span:first-child {
+  flex: 1.5;
+  background: var(--stage-blue);
+  opacity: 0.85;
+}
+.interface-stage__app-blocks span:last-child {
+  border-top: 2px solid var(--stage-red);
+}
+.interface-stage__app-task {
+  display: flex;
+  gap: 0.6em;
+  align-items: center;
+  margin-top: 1em;
+  color: var(--muted);
+  font-size: 0.63em;
+}
+.interface-stage__task-icon {
+  display: flex;
+  color: var(--stage-blue);
+}
+.interface-stage__app-task > svg {
+  margin-left: auto;
+}
+.interface-stage__panel-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.65em;
+  padding: 0.8em 1.6em;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font: 0.52em var(--mono);
+  letter-spacing: 0.07em;
+}
+.interface-stage__panel-caption i {
+  width: 0.45em;
+  height: 0.45em;
+  border-radius: 50%;
+  background: var(--stage-blue);
+  margin-left: auto;
+}
+.interface-stage__phone {
+  top: 29%;
+  right: 5%;
+  width: 24%;
+  padding: 0.55em;
+  border: 2px solid color-mix(in srgb, var(--muted) 40%, var(--bg));
+  border-radius: 1.5em;
+  z-index: 3;
+}
+[data-interface-mode='mobile'] .interface-stage__phone {
+  border-color: var(--stage-blue);
+  box-shadow:
+    0 1rem 2rem #00000024,
+    0 0 0 3px color-mix(in srgb, var(--stage-blue) 8%, transparent);
+}
+.interface-stage__phone-camera {
+  position: absolute;
+  top: 0.55em;
+  left: 50%;
+  width: 2.4em;
+  height: 0.45em;
+  border-radius: 1em;
+  transform: translateX(-50%);
+  background: var(--muted);
+  opacity: 0.25;
+}
+.interface-stage__phone-top {
+  display: flex;
+  justify-content: space-between;
+  font: 0.42em var(--mono);
+  padding: 0.8em 0.6em 1.6em;
+}
+.interface-stage__phone-content {
+  padding: 0.5em 0.45em 0.9em;
+}
+.interface-stage__phone-content > strong {
+  display: block;
+  margin-top: 0.4em;
+  font-size: 1.05em;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+.interface-stage__phone-content .interface-stage__eyebrow {
+  font-size: 0.42em;
+}
+.interface-stage__phone-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  padding: 1em 0.65em;
+  margin: 1em 0;
+  border-radius: 0.5em;
+  background: var(--stage-blue);
+  color: var(--bg);
+}
+.interface-stage__phone-card > svg {
+  width: 1.8em;
+  height: 1.8em;
+}
+.interface-stage__phone-card > span {
+  color: var(--bg);
+  font-size: 0.7em;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.interface-stage__phone-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+  margin-top: 0.65em;
+}
+.interface-stage__phone-row > i {
+  width: 1.2em;
+  height: 1.2em;
+  border: 1px solid var(--line);
+  border-radius: 0.3em;
+}
+.interface-stage__phone-row > span {
+  width: 55%;
+  height: 0.25em;
+  background: var(--line);
+}
+.interface-stage__phone-row > svg {
+  margin-left: auto;
+  color: var(--stage-blue);
+}
+.interface-stage__phone-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7em;
+  margin-top: 1.2em;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.4em;
+  font-size: 0.6em;
+}
+.interface-stage__phone-home {
+  width: 34%;
+  height: 0.2em;
+  background: var(--muted);
+  opacity: 0.5;
+  border-radius: 1em;
+  margin: 0.4em auto 0.2em;
+}
+.interface-stage__endpoint {
+  left: 10%;
+  bottom: 9%;
+  width: 57%;
+  z-index: 4;
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+[data-interface-mode='api'] .interface-stage__endpoint {
+  border-color: color-mix(in srgb, var(--stage-red) 65%, transparent);
+  box-shadow:
+    0 1rem 2rem #00000020,
+    0 0 0 3px color-mix(in srgb, var(--stage-red) 7%, transparent);
+}
+.interface-stage__endpoint-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85em 1em;
+  border-bottom: 1px solid var(--line);
+  font: 0.55em var(--mono);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.interface-stage__endpoint-heading > span {
+  display: flex;
+  gap: 0.6em;
+  align-items: center;
+}
+.interface-stage__endpoint-heading > span > svg {
+  color: var(--stage-red);
+}
+.interface-stage__code {
+  display: grid;
+  grid-template-columns: 1.7em 1fr;
+  gap: 0.35em 0.55em;
+  padding: 1em 1.1em;
+  font-size: 0.67em;
+}
+.interface-stage__code-number {
+  color: var(--muted);
+  opacity: 0.6;
+  font: inherit;
+  font-family: var(--mono);
+}
+.interface-stage__code code {
+  color: var(--text);
+  white-space: pre;
+  font: inherit;
+  font-family: var(--mono);
+}
+.interface-stage__code code > span {
+  color: var(--stage-blue);
+}
+.interface-stage__code code > b {
+  color: var(--stage-blue);
+  font-weight: 400;
+}
+.interface-stage__canvas-footnote {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.65em;
+  position: absolute;
+  bottom: 2%;
+  right: 6%;
+  font: 0.48em var(--mono);
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.interface-stage__canvas-footnote i {
+  width: 0.3em;
+  height: 0.3em;
+  background: var(--stage-red);
+}
+.interface-stage__description {
+  border-top: 1px solid var(--line);
+  padding: 1.1rem 1.3rem 1.3rem;
+}
+.interface-stage__description-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+  color: var(--stage-blue);
+  font: max(11px, 0.58rem) var(--mono);
+}
+.interface-stage__description-top > span:last-child {
+  color: var(--muted);
+}
+.interface-stage__description h3 {
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.4rem;
+}
+.interface-stage__description p {
+  color: var(--muted);
+  font-size: max(14px, 0.75rem);
+  line-height: 1.7;
+  margin: 0;
+  min-height: 3.8em;
+  max-width: 48ch;
+}
+@media (min-width: 851px) {
+  .interface-stage__heading {
+    gap: 8px;
+    padding: 13px 20px 10px;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+  .interface-stage__study {
+    font-size: 8px;
+  }
+  .interface-stage__controls {
+    margin: 0 16px;
+    padding: 3px;
+    gap: 3px;
+    border-radius: 9px;
+  }
+  .interface-stage__control {
+    min-height: 36px;
+    padding: 6px;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .interface-stage__canvas {
+    height: 250px;
+    aspect-ratio: auto;
+    margin: 4px 12px 0;
+    font-size: 10px;
+  }
+  .interface-stage__canvas-label {
+    top: 3%;
+    left: 6%;
+    font-size: 6px;
+  }
+  .interface-stage__browser {
+    top: 8%;
+    left: 6%;
+    width: 56%;
+    border-radius: 8px;
+  }
+  .interface-stage__browser-bar {
+    padding: 6px 10px;
+    font-size: 7px;
+    line-height: 1.2;
+  }
+  .interface-stage__app {
+    padding: 8px 12px;
+  }
+  .interface-stage__app-body {
+    padding: 6px 0 2px;
+  }
+  .interface-stage__app-copy strong {
+    font-size: 19px;
+    margin-top: 3px;
+  }
+  .interface-stage__app-copy p {
+    font-size: 7px;
+    line-height: 1.2;
+    margin-top: 5px;
+  }
+  .interface-stage__app-blocks {
+    margin-top: 8px;
+  }
+  .interface-stage__app-blocks span {
+    height: 19px;
+  }
+  .interface-stage__app-task {
+    display: none;
+  }
+  .interface-stage__panel-caption {
+    display: none;
+  }
+  .interface-stage__phone {
+    top: 12%;
+    right: 6%;
+    width: 23%;
+    max-width: 150px;
+    font-size: 10px;
+    border-radius: 15px;
+  }
+  .interface-stage__phone-card {
+    padding: 8px 7px;
+    gap: 5px;
+    margin: 7px 0;
+  }
+  .interface-stage__phone-row {
+    margin-top: 5px;
+  }
+  .interface-stage__phone-action {
+    margin-top: 7px;
+  }
+  .interface-stage__endpoint {
+    left: 6%;
+    bottom: 2%;
+    width: 56%;
+    border-radius: 7px;
+  }
+  .interface-stage__endpoint-heading {
+    padding: 5px 10px;
+    font-size: 6px;
+    line-height: 1.2;
+  }
+  .interface-stage__code {
+    padding: 7px 10px;
+    font-size: 7px;
+    line-height: 1.2;
+    gap: 2px 6px;
+  }
+  .interface-stage__canvas-footnote {
+    display: none;
+  }
+  .interface-stage__description {
+    padding: 12px 20px 14px;
+  }
+  .interface-stage__description-top {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  .interface-stage__description h3 {
+    font-size: 17px;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+  .interface-stage__description p {
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 42px;
+    max-width: none;
+  }
+}
+@media (max-width: 850px) {
+  .interface-stage__heading {
+    padding: 12px 16px 8px;
+    font-size: 12px;
+  }
+  .interface-stage__canvas {
+    aspect-ratio: 560 / 390;
+    margin-top: 4px;
+  }
+  .interface-stage__phone {
+    top: 25%;
+  }
+  .interface-stage__study {
+    display: none;
+  }
+  .interface-stage__controls {
+    margin: 0 0.8rem;
+  }
+  .interface-stage__control {
+    min-height: 44px;
+    font-size: 12px;
+    gap: 0.3rem;
+  }
+  .interface-stage__control svg {
+    width: 13px;
+    height: 13px;
+  }
+  .interface-stage__description {
+    padding: 1rem;
+  }
+  .interface-stage__description p {
+    font-size: 14px;
+    min-height: 4.65em;
+    line-height: 1.55;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .interface-stage *,
+  .interface-stage *::before,
+  .interface-stage *::after {
+    transition: none !important;
+  }
+}

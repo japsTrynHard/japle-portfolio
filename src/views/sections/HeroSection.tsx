@@ -1,148 +1,103 @@
+﻿import { motion } from 'motion/react'
+import { ArrowDown, ArrowDownRight, ArrowUpRight, Braces, MapPin } from 'lucide-react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
-import { motion, useMotionValue, useSpring } from 'motion/react'
-import { ArrowDown, ArrowDownRight, ArrowUpRight, Code2, Sparkles } from 'lucide-react'
-import { DeveloperIllustration } from '../components/animations/DeveloperIllustration'
+import { InterfaceStage } from '../components/animations/InterfaceStage'
+
+const ease = [0.22, 1, 0.36, 1] as const
+
 export function HeroSection() {
   const reduced = useReducedMotion()
-  const x = useMotionValue(0),
-    y = useMotionValue(0)
-  const moveX = useSpring(x, { stiffness: 70, damping: 25 }),
-    moveY = useSpring(y, { stiffness: 70, damping: 25 })
   return (
-    <section
-      id="home"
-      className="hero-section container"
-      onPointerMove={(event) => {
-        if (reduced || event.pointerType !== 'mouse') return
-        const bounds = event.currentTarget.getBoundingClientRect()
-        x.set((event.clientX - bounds.left - bounds.width / 2) * 0.025)
-        y.set((event.clientY - bounds.top - bounds.height / 2) * 0.025)
-      }}
-      onPointerLeave={() => {
-        x.set(0)
-        y.set(0)
-      }}
-    >
-      <div className="hero-topline">
-        <span className="eyebrow">
-          <span className="status-dot" /> SEEKING A DEVELOPER INTERNSHIP
+    <section id="home" className="hero-section identity-hero container">
+      <div className="identity-topline">
+        <span className="identity-file mono">
+          <Braces size={15} /> portfolio / japle-ligaya
         </span>
-        <span className="mono hero-location">BASED IN THE PHILIPPINES ↗</span>
+        <span className="identity-availability">
+          <span className="status-dot" /> Seeking a developer internship
+        </span>
       </div>
-      <div className="hero-composition">
-        <div className="hero-copy">
-          <motion.p
-            className="hero-name"
-            initial={reduced ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            Hello, I'm
-          </motion.p>
-          <h1 className="hero-identity" aria-label="Japle Ligaya">
-            {['Japle', 'Ligaya.'].map((line, i) => (
-              <span className="hero-line" key={line}>
-                <motion.span
-                  initial={reduced ? false : { y: '110%', rotate: 3 }}
-                  animate={{ y: 0, rotate: 0 }}
-                  transition={{ duration: 1, delay: 0.15 + i * 0.13, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  {i === 0 ? (
-                    line.split('').map((letter, index) => (
-                      <motion.span
-                        className="hero-letter"
-                        key={index}
-                        initial={reduced ? false : { opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.18 + index * 0.055 }}
-                      >
-                        {letter}
-                      </motion.span>
-                    ))
-                  ) : (
-                    <>
-                      <em className="hero-surname">
-                        {line.split('').map((letter, index) => (
-                          <motion.span
-                            className="hero-letter"
-                            key={index}
-                            initial={reduced ? false : { opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.38 + index * 0.055 }}
-                          >
-                            {letter}
-                          </motion.span>
-                        ))}
-                        <svg viewBox="0 0 360 16" aria-hidden="true">
-                          <motion.path
-                            d="M4 10Q142 1 353 7M60 15Q210 7 329 12"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            initial={{ pathLength: reduced ? 1 : 0 }}
-                            animate={{ pathLength: 1 }}
-                            transition={{ duration: 1.1, delay: 0.7 }}
-                          />
-                        </svg>
-                      </em>
-                      <span className="hero-star" aria-hidden="true">
-                        ✳
-                      </span>
-                    </>
-                  )}
-                </motion.span>
-              </span>
-            ))}
-          </h1>
-          <motion.div
-            initial={reduced ? false : { opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
-          >
-            <div className="hero-role hero-profession">
-              <Code2 size={20} />
-              <span>Full-Stack Web & Mobile Developer</span>
-            </div>
-            <p className="hero-description">
-              <span className="hero-tagline">Flutter mobile apps. React web applications.</span>
-              <br />
-              Hands-on experience with authentication, databases, and AI integrations.
-            </p>
-            <div className="hero-ctas">
-              <a className="button primary magnetic" href="#projects">
-                View my projects <ArrowDownRight size={19} />
-              </a>
-              <a className="button ghost" href="#contact">
-                Contact me <ArrowUpRight size={17} />
-              </a>
-            </div>
-          </motion.div>
-        </div>
+      <div className="identity-heading">
+        <p className="identity-greeting">Hello, I&apos;m</p>
+        <h1 className="hero-identity" aria-label="Japle Ligaya">
+          {['Japle', 'Ligaya'].map((name, index) => (
+            <span className="hero-line" key={name}>
+              <motion.span
+                initial={reduced ? false : { y: '110%', rotate: 3 }}
+                animate={{ y: 0, rotate: 0 }}
+                transition={{ duration: 0.95, delay: 0.08 + index * 0.12, ease }}
+              >
+                {name}
+                <span className="identity-period" aria-hidden="true">
+                  {index === 1 ? '.' : ''}
+                </span>
+              </motion.span>
+            </span>
+          ))}
+        </h1>
         <motion.div
-          className="hero-visual"
-          style={{ x: moveX, y: moveY }}
-          initial={reduced ? false : { opacity: 0, scale: 0.9, rotate: 3 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ duration: 1.2, delay: 0.2 }}
+          className="identity-rule"
+          aria-hidden="true"
+          initial={reduced ? false : { scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.9, delay: 0.2, ease }}
         >
-          <DeveloperIllustration />
-          <div className="art-caption">
-            <Sparkles size={15} />
-            <span>Flutter · React · Supabase · Firebase</span>
-          </div>
+          <span />
         </motion.div>
       </div>
-      <div className="hero-bottom">
-        <a href="#featured" className="scroll-cue">
-          <span className="scroll-cue-icon">
-            <ArrowDown size={16} />
-          </span>{' '}
-          SCROLL TO EXPLORE
+      <div className="identity-workbench">
+        <motion.div
+          className="identity-copy"
+          initial={reduced ? false : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.25, ease }}
+        >
+          <div className="identity-role-label mono">
+            <span>01</span> THE DEVELOPER
+          </div>
+          <h2 className="identity-role">
+            Full-Stack Web <span>&amp; Mobile Developer</span>
+          </h2>
+          <p className="hero-description">
+            <span className="hero-tagline">Flutter mobile apps. React web applications.</span>
+            <br />
+            Hands-on experience with authentication, databases, and AI integrations.
+          </p>
+          <div className="hero-ctas">
+            <a className="button primary" href="#projects">
+              View my projects <ArrowDownRight size={19} />
+            </a>
+            <a className="button ghost" href="#contact">
+              Contact me <ArrowUpRight size={17} />
+            </a>
+          </div>
+          <div className="identity-location">
+            <MapPin size={14} />
+            <span>Based in the Philippines</span>
+            <span className="identity-location-line" />
+            <span>Web. Mobile. APIs.</span>
+          </div>
+        </motion.div>
+        <motion.div
+          className="hero-visual identity-visual"
+          initial={reduced ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.32, ease }}
+        >
+          <InterfaceStage />
+        </motion.div>
+      </div>
+      <div className="identity-bottom">
+        <a href="#featured" className="identity-scroll">
+          <ArrowDown size={16} />
+          <span>Explore the work</span>
         </a>
-        <span className="hero-signature">
-          Web. Mobile. <em>APIs.</em>
+        <span className="mono identity-stack">
+          React <span>/</span> Flutter <span>/</span> Supabase <span>/</span> Firebase
         </span>
-        <span className="mono">01 — 09</span>
+        <span className="mono identity-build">
+          <span aria-hidden="true">{'</>'}</span> Built with intention.
+        </span>
       </div>
     </section>
   )

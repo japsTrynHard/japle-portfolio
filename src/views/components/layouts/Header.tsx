@@ -5,6 +5,7 @@ import { motion, useScroll, useSpring } from 'motion/react'
 import { ThemeGlyph } from '../ui/ThemeGlyph'
 import { useThemeController } from '../../../controllers/useThemeController'
 import { useReducedMotion } from '../../../hooks/useReducedMotion'
+import { Wordmark } from '../ui/Wordmark'
 const links = [
   ['Home', 'home'],
   ['Projects', 'projects'],
@@ -56,7 +57,7 @@ export function Header() {
           aria-label="Japle Ligaya home"
           onClick={() => setOpen(false)}
         >
-          japle<span className="wordmark-dot">.dev</span>
+          <Wordmark />
         </Link>
         <nav
           aria-label="Main navigation"

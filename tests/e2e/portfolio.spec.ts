@@ -15,7 +15,8 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/')
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
   await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
   await page.evaluate(() => document.fonts.ready)
@@ -29,12 +30,14 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   )
   await page.getByRole('switch', { name: 'Dark mode' }).click()
   await page.reload()
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
-  await page.getByRole('switch', { name: 'Dark mode' }).click()
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).toBeChecked()
+  await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
+  await page.screenshot({ path: 'artifacts/home-dark.png' })
+  await page.getByRole('switch', { name: 'Dark mode' }).click()
   await page.reload()
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  await page.getByRole('switch', { name: 'Dark mode' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
   await page.screenshot({ path: 'artifacts/home-light.png' })
   await page.evaluate(() => localStorage.setItem('japle-theme', 'system'))
@@ -46,6 +49,61 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   expect(errors).toEqual([])
+})
+test('first paint stays light for new visitors, legacy preferences, and blocked storage', async ({
+  browser,
+}) => {
+  for (const scenario of ['fresh', 'legacy', 'blocked'] as const) {
+    const context = await browser.newContext({
+      baseURL: 'http://127.0.0.1:5173',
+      colorScheme: 'dark',
+    })
+    try {
+      await context.addInitScript((mode) => {
+        if (window.top !== window) return
+        if (mode === 'legacy' && !localStorage.getItem('japle-theme-revision')) {
+          localStorage.setItem('japle-theme', 'dark')
+          localStorage.setItem('japle-theme-revision', 'dark-default-v3')
+        }
+        if (mode === 'blocked') {
+          Object.defineProperties(Storage.prototype, {
+            getItem: {
+              configurable: true,
+              value: () => {
+                throw new DOMException('Storage is unavailable', 'SecurityError')
+              },
+            },
+            setItem: {
+              configurable: true,
+              value: () => {
+                throw new DOMException('Storage is unavailable', 'SecurityError')
+              },
+            },
+          })
+        }
+      }, scenario)
+      // Check the document's initial appearance before React can correct it.
+      await context.route('**/src/main.tsx', (route) =>
+        route.fulfill({ contentType: 'application/javascript', body: '' }),
+      )
+      const page = await context.newPage()
+      await page.goto('/')
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await context.unroute('**/src/main.tsx')
+      await page.reload()
+      await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+      await page.getByRole('switch', { name: 'Dark mode' }).click()
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+      await page.reload()
+      await expect(page.locator('html')).toHaveAttribute(
+        'data-theme',
+        scenario === 'blocked' ? 'light' : 'dark',
+      )
+    } finally {
+      await context.close()
+    }
+  }
 })
 test('project filters, technology selection, expertise keyboard navigation, and real CVs', async ({
   page,
@@ -153,13 +211,32 @@ test('missing CV files keep the availability-aware fallback', async ({ page }) =
   await expect(page.getByText('Resume file not yet available')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Download PDF' })).toBeDisabled()
 })
-test('larger default design, restrained ambient logos, and interactive cursor', async ({
-  page,
-}) => {
+test('full-name identity, neutral dark canvas, and contextual cursor', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 1000 })
   await page.goto('/')
+  await page.getByRole('switch', { name: 'Dark mode' }).click()
   await expect(page.locator('html')).toHaveCSS('font-size', '20px')
-  await expect(page.locator('.ambient-symbol')).toHaveCount(8)
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(24, 25, 26)')
+  const brand = page.getByRole('banner').getByRole('link', { name: 'Japle Ligaya home' })
+  await expect(brand).toContainText('Japle')
+  await expect(brand).toContainText('Ligaya')
+  await expect(brand).not.toContainText('.dev')
+  await expect(page.locator('.identity-heading')).toBeVisible()
+  await expect(page.locator('.identity-workbench')).toBeVisible()
+  await page.evaluate(() => document.fonts.ready)
+  const nameSpacing = await page.locator('.hero-identity').evaluate((heading) => {
+    const words = heading.querySelectorAll('.hero-line')
+    const first = words[0].getBoundingClientRect()
+    const last = words[1].getBoundingClientRect()
+    return {
+      gap: last.left - first.right,
+      fontSize: parseFloat(getComputedStyle(heading).fontSize),
+    }
+  })
+  expect(nameSpacing.gap).toBeGreaterThanOrEqual(0)
+  expect(nameSpacing.gap).toBeLessThanOrEqual(nameSpacing.fontSize * 0.3)
+  await expect(page.locator('.code-particle')).toHaveCount(8)
   await page.locator('.project-card').first().hover()
   await expect(page.locator('.interactive-cursor')).toHaveClass(/cursor-view/)
   await expect(page.locator('.interactive-cursor')).toHaveCSS('pointer-events', 'none')
@@ -173,7 +250,87 @@ test('larger default design, restrained ambient logos, and interactive cursor', 
   ).toBe(true)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(page.locator('.interactive-cursor')).toHaveCount(0)
-  await expect(page.locator('.ambient-symbol').first()).toHaveCSS('animation-name', 'none')
+  await expect(page.locator('.code-particle')).toHaveCount(8)
+})
+test('decorative code background responds without blocking controls and respects reduced motion', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const atmosphere = page.locator('.code-atmosphere')
+  const light = atmosphere.locator('.code-atmosphere__cursor-light')
+  await expect(atmosphere).toHaveAttribute('aria-hidden', 'true')
+  await expect(atmosphere).toHaveCSS('pointer-events', 'none')
+  await expect(atmosphere).toHaveAttribute('data-scene', 'home')
+  await expect(atmosphere).toHaveAttribute('data-pointer', 'true')
+  await expect(atmosphere.locator('.code-particle')).toHaveCount(8)
+  await expect(atmosphere.locator('.code-particle__drift').first()).not.toHaveCSS(
+    'animation-name',
+    'none',
+  )
+  const initialLightPosition = await light.evaluate(
+    (element) => getComputedStyle(element).transform,
+  )
+  await page.mouse.move(800, 400)
+  await expect
+    .poll(() => light.evaluate((element) => getComputedStyle(element).transform))
+    .not.toBe(initialLightPosition)
+
+  const stage = page.locator('.interface-stage')
+  await stage.hover({ position: { x: 45, y: 60 } })
+  await expect
+    .poll(() => stage.evaluate((element) => element.style.getPropertyValue('--surface-x').trim()))
+    .not.toBe('')
+  await stage.getByRole('button', { name: 'Mobile', exact: true }).click()
+  await expect(stage).toHaveAttribute('data-interface-mode', 'mobile')
+
+  await page
+    .locator('#projects')
+    .evaluate((element) => element.scrollIntoView({ behavior: 'instant', block: 'start' }))
+  await expect(atmosphere).toHaveAttribute('data-scene', 'projects')
+  await page.goto('/work/promptwise')
+  await expect(atmosphere).toHaveAttribute('data-scene', 'case')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(atmosphere).toHaveAttribute('data-reduced-motion', 'true')
+  await expect(atmosphere).toHaveAttribute('data-pointer', 'false')
+  await expect(atmosphere.locator('.code-particle__drift').first()).toHaveCSS(
+    'animation-name',
+    'none',
+  )
+  await expect(light).toBeHidden()
+})
+test('development-area explorer works with keyboard and reduced motion', async ({ page }) => {
+  for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+    await page.emulateMedia({ reducedMotion })
+    await page.goto('/')
+    const controls = page.getByRole('group', { name: 'Explore development areas' })
+    const stage = page.locator('.interface-stage')
+    const description = page.locator('#interface-stage-description')
+    await expect(controls.getByRole('button', { name: 'Web', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(stage).toHaveAttribute('data-interface-mode', 'web')
+    await expect(description).toContainText('React / TypeScript')
+
+    const mobile = controls.getByRole('button', { name: 'Mobile', exact: true })
+    await mobile.focus()
+    await page.keyboard.press('Enter')
+    await expect(mobile).toHaveAttribute('aria-pressed', 'true')
+    await expect(stage).toHaveAttribute('data-interface-mode', 'mobile')
+    await expect(description).toContainText('Flutter / Dart')
+
+    const api = controls.getByRole('button', { name: 'APIs & data', exact: true })
+    await api.focus()
+    await page.keyboard.press('Space')
+    await expect(api).toHaveAttribute('aria-pressed', 'true')
+    await expect(stage).toHaveAttribute('data-interface-mode', 'api')
+    await expect(description).toContainText('authentication, databases, and APIs')
+    await expect(controls.locator('button[aria-pressed="true"]')).toHaveCount(1)
+
+    await controls.getByRole('button', { name: 'Web', exact: true }).click()
+    await expect(stage).toHaveAttribute('data-interface-mode', 'web')
+    await expect(description).toContainText('responsive layouts')
+  }
 })
 test('carousel autoplay pauses on hover, focus, outside viewport, and explicit pause', async ({
   page,
@@ -204,17 +361,13 @@ test('responsive layouts, mobile navigation, touch swipe, and reduced motion', a
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-    if (width === 1150)
-      expect(
-        await page
-          .locator('.hero-line')
-          .first()
-          .evaluate(
-            (node) =>
-              node.getBoundingClientRect().height <
-              parseFloat(getComputedStyle(node).fontSize) * 1.5,
-          ),
-      ).toBe(true)
+    const heading = await page.locator('.identity-heading').boundingBox()
+    const workbench = await page.locator('.identity-workbench').boundingBox()
+    expect(heading).not.toBeNull()
+    expect(workbench).not.toBeNull()
+    expect(heading!.x).toBeGreaterThanOrEqual(0)
+    expect(heading!.x + heading!.width).toBeLessThanOrEqual(width)
+    expect(heading!.y + heading!.height).toBeLessThanOrEqual(workbench!.y + 1)
     if (width === 390) await page.screenshot({ path: 'artifacts/home-mobile.png' })
     if (width === 768) await page.screenshot({ path: 'artifacts/home-tablet.png' })
     await expect(page.locator('.progress-running')).toHaveCount(0)
