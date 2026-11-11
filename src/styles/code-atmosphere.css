@@ -35,20 +35,20 @@
 }
 .code-atmosphere__cursor-light {
   position: absolute;
-  top: -80px;
-  left: -80px;
-  width: 160px;
-  height: 160px;
+  top: -36px;
+  left: -36px;
+  width: 72px;
+  height: 72px;
   background:
     repeating-linear-gradient(
       0deg,
-      transparent 0 15px,
-      color-mix(in srgb, var(--highlight) 7%, transparent) 15px 16px
+      transparent 0 7px,
+      color-mix(in srgb, var(--highlight) 7%, transparent) 7px 8px
     ),
     repeating-linear-gradient(
       90deg,
-      transparent 0 15px,
-      color-mix(in srgb, var(--highlight) 7%, transparent) 15px 16px
+      transparent 0 7px,
+      color-mix(in srgb, var(--highlight) 7%, transparent) 7px 8px
     );
   clip-path: polygon(
     30% 0,
@@ -164,13 +164,13 @@
   background:
     repeating-linear-gradient(
       0deg,
-      transparent 0 15px,
-      color-mix(in srgb, var(--accent) 6%, transparent) 15px 16px
+      transparent 0 7px,
+      color-mix(in srgb, var(--accent) 6%, transparent) 7px 8px
     ),
     repeating-linear-gradient(
       90deg,
-      transparent 0 15px,
-      color-mix(in srgb, var(--accent) 6%, transparent) 15px 16px
+      transparent 0 7px,
+      color-mix(in srgb, var(--accent) 6%, transparent) 7px 8px
     );
 }
 @keyframes code-atmosphere-drift {
