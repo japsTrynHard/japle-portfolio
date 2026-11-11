@@ -94,29 +94,6 @@
   width: 2.45rem;
   height: 1.4rem;
 }
-.theme-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-.theme-auto {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  min-height: 1.85rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--line);
-  border-radius: 0.2rem;
-  color: var(--muted);
-  font-size: 0.58rem;
-}
-.theme-auto[aria-pressed='true'] {
-  color: var(--highlight);
-  background: var(--accent-soft);
-  border-color: var(--highlight);
-  box-shadow: inset 0 -2px var(--signal-red);
-}
 .theme-switch-thumb {
   width: 1.1rem;
   height: 1.1rem;
@@ -711,7 +688,6 @@
     overflow-wrap: anywhere;
   }
   .theme-switch,
-  .theme-auto,
   .mobile-toggle,
   .nav-resume {
     min-width: 44px;
@@ -888,16 +864,5 @@
       calc(var(--surface-x, 0px) + 22px) calc(var(--surface-y, 0px) - 28px),
       calc(var(--surface-x, 0px) - 34px) calc(var(--surface-y, 0px) + 4px),
       calc(var(--surface-x, 0px) + 4px) calc(var(--surface-y, 0px) - 36px);
-  }
-}
-@media (max-width: 340px) {
-  .site-header .brand-name {
-    display: none;
-  }
-  .theme-controls {
-    gap: 0.25rem;
-  }
-  .theme-auto {
-    padding-inline: 0.4rem;
   }
 }

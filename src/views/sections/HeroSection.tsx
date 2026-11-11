@@ -14,7 +14,7 @@ export function HeroSection() {
           <Braces size={15} /> portfolio / japle-ligaya
         </span>
         <span className="identity-availability">
-          <span className="status-dot" /> Seeking a developer internship
+          <span className="status-dot" /> Open to development opportunities
         </span>
       </div>
       <div className="identity-heading">

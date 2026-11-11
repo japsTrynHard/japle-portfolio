@@ -40,7 +40,7 @@ export function ContactSection() {
       </svg>
       <Reveal>
         <p className="eyebrow">
-          <span>08 /</span> INTERNSHIP & ENTRY-LEVEL OPPORTUNITIES
+          <span>08 /</span> WORK & PROJECT OPPORTUNITIES
         </p>
         <div className="contact-heading">
           <h2>
@@ -77,7 +77,7 @@ export function ContactSection() {
         </div>
         <p className="contact-intro">
           Looking for a developer with hands-on React and Flutter project experience? Contact me to
-          discuss software development internships or entry-level opportunities.
+          discuss software development roles, freelance projects, and collaborations.
         </p>
       </Reveal>
       <div className="contact-grid">
@@ -125,7 +125,7 @@ export function ContactSection() {
       </div>
       <div className="contact-closing">
         <span className="status-dot" />
-        <span>Seeking opportunities to contribute to a software development team.</span>
+        <span>Open to development roles, projects, and collaborations.</span>
       </div>
     </section>
   )

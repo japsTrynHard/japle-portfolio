@@ -16,7 +16,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" v
 <text x="1136" y="71" text-anchor="end" fill="#475569" font-family="monospace" font-size="12" letter-spacing="1">WEB / MOBILE / API INTEGRATION</text>
 <path d="M64 110H1136" stroke="#0f172a25"/>
 <rect x="65" y="154" width="6" height="6" fill="#c8102e"/>
-<text x="83" y="162" fill="#475569" font-family="monospace" font-size="12" letter-spacing="1.3">SOFTWARE DEVELOPMENT INTERN CANDIDATE</text>
+<text x="83" y="162" fill="#475569" font-family="monospace" font-size="12" letter-spacing="1.3">OPEN TO DEVELOPMENT OPPORTUNITIES</text>
 <text x="58" y="284" fill="#0f172a" font-family="Arial,sans-serif" font-weight="700" font-size="128" letter-spacing="-7">JAPLE</text>
 <text x="59" y="397" fill="#1d428a" font-family="Arial,sans-serif" font-weight="700" font-size="128" letter-spacing="-7">LIGAYA.</text>
 <text x="65" y="451" fill="#0f172a" font-family="Arial,sans-serif" font-size="24" font-weight="500">Full-Stack Web &amp; Mobile Developer</text>

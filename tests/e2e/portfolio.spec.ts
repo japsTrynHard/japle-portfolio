@@ -17,9 +17,9 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   await page.emulateMedia({ colorScheme: 'light' })
   await page.goto('/')
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
-  await expect(page.getByRole('button', { name: 'Follow device theme' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
+  await expect(page.getByRole('button', { name: 'Follow device theme' })).toHaveCount(0)
+  await expect(page.locator('.identity-availability')).toHaveText(
+    'Open to development opportunities',
   )
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
@@ -45,14 +45,9 @@ test('homepage, real contact destinations, theme persistence, and visual baselin
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await expect(page.locator('.hero-visual')).toHaveCSS('opacity', '1')
   await page.screenshot({ path: 'artifacts/home-light.png' })
-  await page.getByRole('button', { name: 'Follow device theme' }).click()
-  await expect(page.getByRole('button', { name: 'Follow device theme' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  )
   await page.emulateMedia({ colorScheme: 'dark' })
-  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-  await expect(page.getByRole('switch', { name: 'Dark mode' })).toBeChecked()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
   await page.emulateMedia({ colorScheme: 'light' })
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
   await expect(page.getByRole('switch', { name: 'Dark mode' })).not.toBeChecked()
@@ -109,22 +104,16 @@ test('device theme controls first paint, live changes, overrides, and storage fa
         await page.reload()
         await expect(page.getByRole('heading', { level: 1 })).toHaveAccessibleName('Japle Ligaya')
         await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
-        const auto = page.getByRole('button', { name: 'Follow device theme' })
-        await expect(auto).toHaveAttribute('aria-pressed', 'true')
         const otherScheme = scheme === 'dark' ? 'light' : 'dark'
         await page.emulateMedia({ colorScheme: otherScheme })
         await expect(page.locator('html')).toHaveAttribute('data-theme', otherScheme)
         await page.getByRole('switch', { name: 'Dark mode' }).click()
         await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
-        await expect(auto).toHaveAttribute('aria-pressed', 'false')
         await page.reload()
         await expect(page.locator('html')).toHaveAttribute(
           'data-theme',
           scenario === 'blocked' ? otherScheme : scheme,
         )
-        await auto.click()
-        await expect(auto).toHaveAttribute('aria-pressed', 'true')
-        await expect(page.locator('html')).toHaveAttribute('data-theme', otherScheme)
         await page.emulateMedia({ colorScheme: scheme })
         await expect(page.locator('html')).toHaveAttribute('data-theme', scheme)
       } finally {

@@ -86,7 +86,7 @@ export function AboutSection() {
               <span className="portrait-note mono">WEB + MOBILE DEVELOPMENT</span>
             </div>
             <p className="profile-caption">
-              Available for software development internship opportunities.
+              Open to software development roles and project opportunities.
             </p>
           </div>
           <div className="about-copy">

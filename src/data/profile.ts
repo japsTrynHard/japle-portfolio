@@ -4,5 +4,5 @@ export const profile: Profile = {
   title: 'Full-Stack Web & Mobile Developer',
   education: 'National University Baliwag',
   introduction:
-    'I am an Information Technology student at National University Baliwag seeking a software development internship. I build Flutter mobile applications and React web applications, with experience in authentication, database integration, and AI-assisted features.',
+    'I am an Information Technology student at National University Baliwag open to software development opportunities. I build Flutter mobile applications and React web applications, with experience in authentication, database integration, and AI-assisted features.',
 }

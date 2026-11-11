@@ -3,7 +3,7 @@ export const resumes: Resume[] = [
   {
     id: 'ats',
     name: 'ATS-Friendly',
-    description: 'Clean, professional resume for internships and entry-level opportunities.',
+    description: 'Clean, professional resume for software development opportunities.',
     path: '/resumes/Japle_A_Ligaya_Resume_ATS.pdf',
     downloadName: 'Japle_A_Ligaya_Resume_ATS.pdf',
   },
